@@ -1,8 +1,9 @@
+const { hash } = require('../utils/encryption');
 const User = require('../models/User');
 
 module.exports = {
     async find(request, response) {
-        const { id } = request.params;
+        const { id } = request.id;
         
         const user = await User.findByPk(id);
 
@@ -20,17 +21,24 @@ module.exports = {
     },
 
     async store(request, response) {
-        const { name, email, password } = request.body;
-        
+        const { name, email } = request.body;
+        let { password } = request.body;
+
+        password = hash('sha256', password, 'hex');
+
         const user = await User.create({ name, email, password });
 
         return response.status(201).json(user);
     },
 
     async update(request, response) {
-        const { id } = request.params;
+        const { id } = request.id;
         
-        const { name, email, password } = request.body;
+        const { name, email } = request.body;
+
+        let { password } = request.body;
+
+        password = hash('sha256', password, 'hex');
         
         const user = await User.findByPk(id);
 
@@ -44,7 +52,7 @@ module.exports = {
     },
 
     async delete(request, response) {
-        const { id } = request.params;
+        const { id } = request.id;
 
         let user = await User.findByPk(id);
     
