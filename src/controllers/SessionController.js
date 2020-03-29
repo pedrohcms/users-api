@@ -1,10 +1,13 @@
 const User = require('../models/User');
-
+const { hash } = require('../utils/encryption');
 const { create } =  require('../utils/jwt');
 
 module.exports = {
     async login(request, response) {
-        const { email, password } = request.body;
+        const { email } = request.body;
+        let { password } = request.body;
+
+        password = hash('sha256', password, 'hex');            
 
         const user = await User.findOne({
             where: {
